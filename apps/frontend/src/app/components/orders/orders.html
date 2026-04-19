@@ -1,0 +1,49 @@
+<h1>Order Management for Electronic Parts</h1>
+
+<p-card header="Create an order by selecting a part and the number of required units" class="card">
+  <div class="content-wrapper">
+    <p-select [options]="parts()" optionLabel="description" placeholder="select part" optionValue="id"
+              [formControl]="partsSelector"></p-select>
+    <p-input-number placeholder="planned quantity" [suffix]="suffix()" showButtons [formControl]="quantityInput"
+                    [min]="0" />
+    <p-button rounded label="submit" severity="info" (click)="submitOrder()" [disabled]="btnDisabled()"
+              class="info-button" />
+  </div>
+</p-card>
+
+<p-card class="table-card">
+  <p-table [value]="workOrders()"
+           selectionMode="single"
+           dataKey="id"
+           stripedRows
+           [paginator]="true"
+           [rows]="10"
+           size="small"
+  >
+    <ng-template #header>
+      <tr>
+        <th>OrderNr.</th>
+        <th>Part</th>
+        <th>Quantity</th>
+        <th>Status</th>
+        <th style="min-width: 150px">Progress</th>
+        <!--        <th>Actions</th>-->
+      </tr>
+    </ng-template>
+    <ng-template #body let-data>
+      <tr [pSelectableRow]="data">
+        <td>{{ data.workOrderNumber }}</td>
+        <td>{{ data.part.description }}</td>
+        <td>{{ data.quantity }}</td>
+        <td>{{ data.status }}</td>
+        <td>
+          <div style="display: flex; align-items: center; gap: 0.5rem">
+            <p-progressBar [value]="(data.unitCount / data.quantity) * 100" [showValue]="false" style="flex: 1; height: 10px" />
+            <span style="font-size: 0.8rem; white-space: nowrap">{{ data.unitCount }} / {{ data.quantity }}</span>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-card>
+

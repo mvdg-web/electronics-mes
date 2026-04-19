@@ -1,22 +1,26 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { JsonPipe } from '@angular/common';
+import { MessageService } from 'primeng/api';
+import { NgIcon } from '@ng-icons/core';
+import { Toast } from 'primeng/toast';
+import { Orders } from './components/orders/orders';
+import { Workflow } from './components/workflow/workflow';
 
 @Component({
-  imports: [RouterModule, JsonPipe],
+  imports: [RouterModule, Toast, Orders, Workflow],
+  providers: [MessageService],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  fruitsSignal = signal(['Apple', 'Banana', 'Orange']);
+  // private breakpointObserver = inject(BreakpointObserver);
+  // isNarrow = toSignal(
+  //   this.breakpointObserver
+  //     .observe('(max-width: 1400px)')
+  //     .pipe(map((result) => result.matches)),
+  // );
 
-  protected addFruit() {
-    this.fruitsSignal.update((fruits) => [...fruits, 'Mango']);
-  }
-
-  protected removeFruit() {
-    this.fruitsSignal.update((fruits) => fruits.slice(0, -1));
-  }
+  messageService = inject(MessageService);
 }

@@ -99,3 +99,15 @@ And join the Nx community:
 - [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
 - [Our Youtube channel](https://www.youtube.com/@nxdevtools)
 - [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+
+## Migrating the Database
+```sh
+npx prisma migrate dev
+```
+```sh
+npx prisma generate
+```
+
+```sh
+npx prisma db execute --file ./prisma/master_data.sql
+```

@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: mes-postgres-local
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mes_local
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_v17:/var/lib/postgresql/data
+
+volumes:
+  postgres_data_v17:

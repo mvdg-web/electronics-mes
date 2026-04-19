@@ -1,0 +1,21 @@
+.page-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100vh;
+  overflow: hidden;
+
+  @media (max-width: 1400px) {
+    display: block;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+}
+
+.page-container > section {
+  @media (max-width: 1400px) {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}

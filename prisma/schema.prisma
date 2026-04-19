@@ -8,8 +8,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client"
-  output   = "../libs/database/src/lib/generated/prisma"
+  provider     = "prisma-client"
+  output       = "../libs/database/src/lib/generated/prisma"
   moduleFormat = "cjs"
 }
 
@@ -19,35 +19,80 @@ generator nestgraphql {
 }
 
 model User {
-  id          String      @id @default(uuid())
-  username    String      @unique
-  name        String
-  role        String      @default("OPERATOR") // ADMIN, OPERATOR, MANAGER
-  workOrders  WorkOrder[]
-  createdAt   DateTime    @default(now())
+  id         String      @id @default(uuid())
+  username   String      @unique
+  name       String
+  role       String      @default("OPERATOR") // ADMIN, OPERATOR, MANAGER
+  workOrders WorkOrder[]
+  createdAt  DateTime    @default(now())
 }
 
-model Product {
-  id          String      @id @default(uuid())
-  sku         String      @unique // e.g., "PCB-A-772"
-  name        String
-  description String?
-  workOrders  WorkOrder[]
+model Part {
+  id String @id @default(uuid())
+
+  // Mapping 'sku' to 'partNumber' in code, but keeping 'sku' in DB
+  partNumber String @unique @map("sku")
+
+  // 'name' becomes 'description' in code, 'description' becomes 'notes'
+  description String  @map("name")
+  notes       String? @map("description")
+
+  // Versioning
+  revision String @default("A")
+
+  // Relations
+  workOrders WorkOrder[]
+  units      Unit[]
+
+  @@map("Product")
 }
 
 model WorkOrder {
-  id              String   @id @default(uuid())
-  workOrderNumber String   @unique
+  id              String @id @default(uuid())
+  workOrderNumber String @unique
   quantity        Int
-  status          String   @default("PLANNED") // PLANNED, IN_PROGRESS, COMPLETED
+  status          String @default("PLANNED")
 
-  // Relations
-  productId       String
-  product         Product  @relation(fields: [productId], references: [id])
+  passedQty Int @default(0)
+  failedQty Int @default(0)
 
-  userId          String?
-  assignedTo      User?    @relation(fields: [userId], references: [id])
+  partId String @map("productId")
+  part   Part   @relation(fields: [partId], references: [id])
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  units Unit[]
+
+  userId     String?
+  assignedTo User?   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Unit {
+  id           String @id @default(uuid())
+  serialNumber String @unique // e.g., SN-2026-0001
+
+  // State on the floor
+  currentStep String  @default("SMT") // SMT, THT, TESTING, PACKING, SHIPPED
+  isDefective Boolean @default(false)
+
+  workOrderId String
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
+
+  partId String @map("productId")
+  part   Part   @relation(fields: [partId], references: [id])
+
+  history UnitHistory[]
+}
+
+model UnitHistory {
+  id     String @id @default(uuid())
+  unitId String
+  unit   Unit   @relation(fields: [unitId], references: [id])
+
+  step   String // e.g., "TESTING"
+  result String // e.g., "PASS" or "FAIL"
+  note   String? // e.g., "Found cold solder joint on R12"
+
+  timestamp DateTime @default(now())
 }

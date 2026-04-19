@@ -15,8 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@mes-system/shared-models": ["shared-models/src/index.ts"],
-      "@mes-system/database": ["libs/database/src/index.ts"]
+      "@mes/db": ["libs/database/src/index.ts"],
+      "@mes/api": ["libs/data-access/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
